@@ -1,3 +1,5 @@
+import { DataType } from '../const'
+
 const Method = {
   GET: `GET`,
   PUT: `PUT`,
@@ -12,34 +14,22 @@ export default class SwapiService {
     this._endPoint = endPoint;
   }
 
-  async getAllPeople() {
-    const response = await this._load( { url: `people` } )
+  getAllItems = async ( type ) => {
+    const response = await this._load( { url: `${type}` } )
     return response.results.map( this._transformPerson )
   }
 
-  async getPerson( id ) {
-    const person = await this._load( { url: `people/${id}` } )
-    return this._transformPerson( person )
-  }
+  getItem = async ( id, type ) => {
+    const item = await this._load( { url: `${type}/${id}` } )
 
-  async getAllPlanets() {
-    const response = await this._load( { url: `planets` } )
-    return response.results.map( this._transformPlanet )
-  }
-
-  async getPlanet( id ) {
-    const planet = await this._load( { url: `planets/${id}` } )
-    return this._transformPlanet( planet )
-  }
-
-  async getAllStarships() {
-    const response = await this._load( { url: `starships` } )
-    return response.results.map( this._transformStarship )
-  }
-
-  async getStarship( id ) {
-    const starship = await this._load( { url: `starships/${id}` } )
-    return this._transformStarship( starship )
+    switch ( type ) {
+      case DataType.PLANET:
+        return this._transformPlanet( item )
+      case DataType.PEOPLE:
+        return this._transformPerson( item )
+      case DataType.STARSHIP:
+        return this._transformStarship( item )
+    }
   }
 
   _transformPlanet( planet ) {
