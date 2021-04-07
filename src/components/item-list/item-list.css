@@ -1,7 +1,22 @@
-.item-list .list-group-item {
-  cursor: pointer;
+.item-list {
+	background-color: #303030;
+	min-height: 100%;
 }
 
-.item-list .list-group-item:hover {
-  background-color: #444;
+.item-list .list-group-item {
+  padding: 0;
+}
+
+.list-group-item a {
+	display: block;
+	padding: 0.75rem 1.25rem;
+
+	color: inherit;
+}
+
+.item-list .list-group-item a:hover,
+.item-list .list-group-item a:focus {
+	background-color: #444;
+  outline: none;
+  text-decoration: none;
 }
