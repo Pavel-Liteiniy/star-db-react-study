@@ -1,28 +1,47 @@
-import React from 'react';
+import React, { Component } from 'react'
 
-import Header from '../header';
-import RandomPlanet from '../random-planet';
-import ItemList from '../item-list';
-import PersonDetails from '../person-details';
+import { DataType } from '../../const'
+import ErrorBoundary from '../error-boundary'
 
-import './app.css';
+import SwapiService from '../../services/swapi-service'
+import { API_BASE } from '../../const'
+import { SwapiServiceProvider } from '../swapi-service-context'
 
-const App = () => {
-  return (
-    <div>
-      <Header />
-      <RandomPlanet />
+import { withSwapiService } from '../hoc-helpers'
 
-      <div className="row mb2">
-        <div className="col-md-6">
-          <ItemList />
-        </div>
-        <div className="col-md-6">
-          <PersonDetails />
-        </div>
-      </div>
-    </div>
-  );
-};
 
-export default App;
+import Header from '../header'
+import RandomPlanet from '../random-planet'
+import Page from '../page'
+
+import './app.css'
+
+export default class App extends Component {
+  swapiService = new SwapiService( API_BASE )
+
+  state = {
+    dataTypeSelected: DataType.STARSHIP,
+  }
+
+  render() {
+    return (
+      <ErrorBoundary>
+        <SwapiServiceProvider value={ this.swapiService }>
+          <div>
+            <Header
+              dataType={ this.state.dataTypeSelected }
+              eventHandler={ this._navigationEventHandler } />
+            { withSwapiService( ( { swapiService } ) => <RandomPlanet swapiService={ swapiService } /> )() }
+            { withSwapiService( ( { swapiService } ) => <Page dataType={ this.state.dataTypeSelected } swapiService={ swapiService } /> )() }
+          </div>
+        </SwapiServiceProvider>
+      </ErrorBoundary>
+    )
+  }
+
+  _navigationEventHandler = ( dataTypeSelected ) => {
+    this.setState( {
+      dataTypeSelected,
+    } )
+  }
+}
