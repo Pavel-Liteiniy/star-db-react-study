@@ -2,10 +2,9 @@ import React, { Component } from 'react'
 
 import './random-planet.css'
 
-import { API_BASE } from '../../const'
-import { getRandomInteger } from '../../utils/common'
+import { DataType } from '../../const'
+import { getRandomInteger, getNumberFormat } from '../../utils/common'
 
-import SwapiService from '../../services/swapi-service'
 import Loader from '../loader'
 import ErrorIndicator from '../error-indicator'
 
@@ -22,15 +21,15 @@ const PlanetView = ( { planet } ) => {
         <ul className="list-group list-group-flush">
           <li className="list-group-item">
             <span className="term">Population</span>
-            <span>{ population }</span>
+            <span>{ getNumberFormat( population ) }</span>
           </li>
           <li className="list-group-item">
             <span className="term">Rotation Period</span>
-            <span>{ rotationPeriod }</span>
+            <span>{ getNumberFormat( rotationPeriod ) }</span>
           </li>
           <li className="list-group-item">
             <span className="term">Diameter</span>
-            <span>{ diameter }</span>
+            <span>{ getNumberFormat( diameter ) }</span>
           </li>
         </ul>
       </div>
@@ -45,12 +44,14 @@ export default class RandomPlanet extends Component {
     error: false,
   }
 
-  constructor() {
-    super()
+  componentDidMount() {
     this.updatePlanet()
+    this.interval = setInterval( this.updatePlanet, 5000 )
   }
 
-  swapiService = new SwapiService( API_BASE )
+  componentWillUnmount() {
+    clearInterval(this.interval)
+  }
 
   _onPlanetLoaded = ( planet ) => {
     this.setState(
@@ -70,9 +71,9 @@ export default class RandomPlanet extends Component {
     )
   }
 
-  updatePlanet() {
-    const id = getRandomInteger( 27, 0 )
-    this.swapiService.getPlanet( id )
+  updatePlanet = () => {
+    const id = getRandomInteger( 24, 3 )
+    this.props.swapiService.getItem( id, DataType.PLANET )
       .then( this._onPlanetLoaded )
       .catch( this._onError )
   }
