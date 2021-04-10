@@ -1,44 +1,34 @@
-import React, { Component } from 'react'
+import React from 'react';
 
-import { DataType } from '../../const'
+import './header.css';
 
-import './header.css'
+const Header = ({ onServiceChange }) => {
+  return (
+    <div className="header d-flex">
+      <h3>
+        <a href="#/">
+          StarDB
+        </a>
+      </h3>
+      <ul className="d-flex">
+        <li>
+          <a href="#/people">People</a>
+        </li>
+        <li>
+          <a href="#/planets">Planets</a>
+        </li>
+        <li>
+          <a href="#/starships">Starships</a>
+        </li>
+      </ul>
 
-export default class Header extends Component {
-  render() {
-    return (
-      <div className="header d-flex">
-        <h3>
-          <a href="#!">
-            Star DB
-          </a>
-        </h3>
-        <ul className="d-flex">
-          <li>
-            <a onClick={this._onNavItemClick(DataType.PEOPLE)} href="#!">People</a>
-          </li>
-          <li>
-            <a onClick={this._onNavItemClick(DataType.PLANET)} href="#!">Planets</a>
-          </li>
-          <li>
-            <a onClick={this._onNavItemClick(DataType.STARSHIP)} href="#!">Starships</a>
-          </li>
-        </ul>
-      </div>
-    )
-  }
+      <button
+          onClick={onServiceChange}
+          className="btn btn-primary btn-sm">
+        Change Service
+      </button>
+    </div>
+  );
+};
 
-  _onNavItemClick = (dataTypeSelected) => {
-    return (evt) => {
-      evt.preventDefault()
-
-      const { dataType, eventHandler } = this.props
-      
-      if (dataTypeSelected === dataType) {
-        return
-      }
-
-      eventHandler(dataTypeSelected)
-    }
-  }
-}
+export default Header;

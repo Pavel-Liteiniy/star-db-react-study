@@ -1,8 +1,8 @@
 import React from 'react';
 
-import './loader.css';
+import './spinner.css';
 
-const Loader = () => {
+const Spinner = () => {
   return (
     <div className="lds-css">
       <div className="lds-double-ring">
@@ -13,4 +13,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default Spinner;

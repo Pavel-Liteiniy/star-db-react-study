@@ -6,15 +6,11 @@
 .header ul li {
   list-style: none;
   margin: 0;
-}
-
-.header ul a {
-  display: block;
   padding: .5rem 1rem;
   border-radius: 3px;
 }
 
-.header ul a:hover {
+.header ul li:hover {
   background-color: #444;
 }
 
@@ -28,4 +24,9 @@
 
 .header h3 a:hover {
   color: #00bc8c;
+}
+
+.header button {
+  height: 2.2rem;
+  margin-top: 3px;
 }

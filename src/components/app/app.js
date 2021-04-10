@@ -1,47 +1,48 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import { DataType } from '../../const'
-import ErrorBoundary from '../error-boundary'
+import Header from '../header';
+import RandomPlanet from '../random-planet';
+import ErrorBoundry from '../error-boundry';
+import SwapiService from '../../services/swapi-service';
+import DummySwapiService from '../../services/dummy-swapi-service';
 
-import SwapiService from '../../services/swapi-service'
-import { API_BASE } from '../../const'
-import { SwapiServiceProvider } from '../swapi-service-context'
+import { PeoplePage, PlanetsPage, StarshipsPage } from '../pages';
+import { SwapiServiceProvider } from '../swapi-service-context';
 
-import { withSwapiService } from '../hoc-helpers'
-
-
-import Header from '../header'
-import RandomPlanet from '../random-planet'
-import Page from '../page'
-
-import './app.css'
+import './app.css';
 
 export default class App extends Component {
-  swapiService = new SwapiService( API_BASE )
 
   state = {
-    dataTypeSelected: DataType.STARSHIP,
-  }
+    swapiService: new SwapiService()
+  };
+
+  onServiceChange = () => {
+    this.setState(({ swapiService }) => {
+      const Service = swapiService instanceof SwapiService ?
+                        DummySwapiService : SwapiService;
+      return {
+        swapiService: new Service()
+      };
+    });
+  };
 
   render() {
+
     return (
-      <ErrorBoundary>
-        <SwapiServiceProvider value={ this.swapiService }>
-          <div>
-            <Header
-              dataType={ this.state.dataTypeSelected }
-              eventHandler={ this._navigationEventHandler } />
-            { withSwapiService( ( { swapiService } ) => <RandomPlanet swapiService={ swapiService } /> )() }
-            { withSwapiService( ( { swapiService } ) => <Page dataType={ this.state.dataTypeSelected } swapiService={ swapiService } /> )() }
+      <ErrorBoundry>
+        <SwapiServiceProvider value={this.state.swapiService} >
+          <div className="stardb-app">
+            <Header onServiceChange={this.onServiceChange} />
+
+            <RandomPlanet />
+            <PeoplePage />
+            <PlanetsPage />
+            <StarshipsPage />
+
           </div>
         </SwapiServiceProvider>
-      </ErrorBoundary>
-    )
-  }
-
-  _navigationEventHandler = ( dataTypeSelected ) => {
-    this.setState( {
-      dataTypeSelected,
-    } )
+      </ErrorBoundry>
+    );
   }
 }

@@ -1,96 +1,102 @@
-import { DataType } from '../const'
-
-const Method = {
-  GET: `GET`,
-  PUT: `PUT`,
-  POST: `POST`,
-  DELETE: `DELETE`,
-};
-
-const ID_REG_EXP = /(planets|starships|people)\/([0-9]+)/
-
 export default class SwapiService {
-  constructor( endPoint ) {
-    this._endPoint = endPoint;
-  }
 
-  getAllItems = async ( type ) => {
-    const response = await this._load( { url: `${type}` } )
-    return response.results.map( this._transformPerson )
-  }
+  _apiBase = 'https://swapi.dev/api';
+  _imageBase = 'https://starwars-visualguide.com/assets/img';
 
-  getItem = async ( id, type ) => {
-    const item = await this._load( { url: `${type}/${id}` } )
+  getResource = async (url) => {
+    const res = await fetch(`${this._apiBase}${url}`);
 
-    switch ( type ) {
-      case DataType.PLANET:
-        return this._transformPlanet( item )
-      case DataType.PEOPLE:
-        return this._transformPerson( item )
-      case DataType.STARSHIP:
-        return this._transformStarship( item )
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${url}` +
+        `, received ${res.status}`)
     }
-  }
+    return await res.json();
+  };
 
-  _transformPlanet( planet ) {
-    const id = planet.url.match( ID_REG_EXP )[ 2 ]
+  getAllPeople = async () => {
+    const res = await this.getResource(`/people/`);
+    return res.results
+      .map(this._transformPerson)
+      .slice(0, 5);
+  };
 
+  getPerson = async (id) => {
+    const person = await this.getResource(`/people/${id}/`);
+    return this._transformPerson(person);
+  };
+
+  getAllPlanets = async () => {
+    const res = await this.getResource(`/planets/`);
+    return res.results
+      .map(this._transformPlanet)
+      .slice(0, 5);
+  };
+
+  getPlanet = async (id) => {
+    const planet = await this.getResource(`/planets/${id}/`);
+    return this._transformPlanet(planet);
+  };
+
+  getAllStarships = async () => {
+    const res = await this.getResource(`/starships/`);
+    return res.results
+      .map(this._transformStarship)
+      .slice(0, 5);
+  };
+
+  getStarship = async (id) => {
+    const starship = await this.getResource(`/starships/${id}/`);
+    return this._transformStarship(starship);
+  };
+
+  getPersonImage = ({id}) => {
+    return `${this._imageBase}/characters/${id}.jpg`
+  };
+
+  getStarshipImage = ({id}) => {
+    return `${this._imageBase}/starships/${id}.jpg`
+  };
+
+  getPlanetImage = ({id}) => {
+    return `${this._imageBase}/planets/${id}.jpg`
+  };
+
+  _extractId = (item) => {
+    const idRegExp = /\/([0-9]*)\/$/;
+    return item.url.match(idRegExp)[1];
+  };
+
+  _transformPlanet = (planet) => {
     return {
-      id,
+      id: this._extractId(planet),
       name: planet.name,
       population: planet.population,
       rotationPeriod: planet.rotation_period,
-      diameter: planet.diameter,
-    }
-  }
+      diameter: planet.diameter
+    };
+  };
 
-  _transformPerson( person ) {
-    const id = person.url.match( ID_REG_EXP )[ 2 ]
-
+  _transformStarship = (starship) => {
     return {
-      id,
-      name: person.name,
-      gender: person.gender,
-      birthYear: person.birthYear,
-      eyeColor: person.eyeColor,
-    }
-  }
-
-  _transformStarship( starship ) {
-    const id = starship.url.match( ID_REG_EXP )[ 2 ]
-
-    return {
-      id,
+      id: this._extractId(starship),
       name: starship.name,
       model: starship.model,
       manufacturer: starship.manufacturer,
-      costInCredits: starship.costInCredits,
+      costInCredits: starship.cost_in_credits,
       length: starship.length,
       crew: starship.crew,
       passengers: starship.passengers,
-      cargoCapacity: starship.cargoCapacity,
+      cargoCapacity: starship.cargo_capacity
     }
-  }
+  };
 
-  _load( {
-    url,
-    method = Method.GET,
-    body = null,
-    headers = new Headers()
-  } ) {
-    return this.getResource( `${this._endPoint}/${url}`, { method, body, headers } );
-  }
-
-  async getResource( url, { method, body, headers } ) {
-
-    const response = await fetch( url, { method, body, headers } )
-
-    if ( !response.ok ) {
-      throw new Error( `Could not fetch ${url}, received status - ${response.status}` )
+  _transformPerson = (person) => {
+    return {
+      id: this._extractId(person),
+      name: person.name,
+      gender: person.gender,
+      birthYear: person.birth_year,
+      eyeColor: person.eye_color
     }
-
-    const resource = await response.json()
-
-    return resource;
   }
 }
