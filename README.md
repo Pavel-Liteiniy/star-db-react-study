@@ -1,4 +1,4 @@
-# Star db ( [live demo](https://pavel-liteiniy.github.io/star-db-react-study/) )
+# Star db ( [live demo](https://star-db-react-study.herokuapp.com/) )
 ## React Application
 
 Учебный проект по изучению библиотеки React.
